@@ -1,1 +1,24 @@
+<h2>Patient Registration</h2>
+
+<input id="name" placeholder="Full name">
+<input id="age" type="number" placeholder="Age">
+
+<select id="gender">
+  <option>Male</option>
+  <option>Female</option>
+</select>
+
+<button onclick="savePatient()">Start Test</button>
+
+<script>
+function savePatient() {
+  const patient = {
+    name: name.value,
+    age: age.value,
+    gender: gender.value
+  };
+  localStorage.setItem("patient", JSON.stringify(patient));
+  window.location.href = "test.html";
+}
+</script>
 
