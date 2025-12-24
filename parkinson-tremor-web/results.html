@@ -1,1 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Results</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<h2>Test Results</h2>
+
+<div id="output">
+  <p><strong>Severity Level:</strong> <span id="severity"></span></p>
+  <p><strong>Tremor Amplitude:</strong> <span id="amplitude"></span></p>
+  <p><strong>Interpretation:</strong> <span id="interpretation"></span></p>
+</div>
+
+<a href="index.html">
+  <button>Back to Home</button>
+</a>
+
+<script>
+const result = JSON.parse(localStorage.getItem("lastResult"));
+
+if (result) {
+  document.getElementById("severity").innerText = result.severity;
+  document.getElementById("amplitude").innerText =
+    result.std_amplitude.toFixed(5);
+  document.getElementById("interpretation").innerText =
+    result.interpretation;
+} else {
+  document.getElementById("output").innerText =
+    "No result data available.";
+}
+</script>
+
+</body>
+</html>
 
