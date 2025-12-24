@@ -1,1 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tremor Test</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<h2>Hand Tremor Test</h2>
+<p id="instruction">Please hold your hand steady in front of the camera</p>
+
+<video id="video" autoplay playsinline></video>
+<p id="timer">Time: 15</p>
+
+<button onclick="finishTest()">Finish Test</button>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+
+<script type="module">
+import { analyzeTremor } from "./js/analysis.js";
+import { saveResult } from "./js/storage.js";
+
+const video = document.getElementById("video");
+const timerEl = document.getElementById("timer");
+
+let positions = [];
+let timeLeft = 15;
+let interval;
+
+// 🔹 Kamera + MediaPipe
+const hands = new Hands({
+  locateFile: file =>
+    `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+});
+
+hands.setOptions({
+  maxNumHands: 1,
+  minDetectionConfidence: 0.7,
+  minTrackingConfidence: 0.7
+});
+
+hands.onResults(results => {
+  if (results.multiHandLandmarks) {
+    const fingerTip = results.multiHandLandmarks[0][8];
+    positions.push(fingerTip.y);
+  }
+});
+
+// 🔹 Kamera ishga tushadi
+const camera = new Camera(video, {
+  onFrame: async () => {
+    await hands.send({ image: video });
+  },
+  width: 640,
+  height: 480
+});
+camera.start();
+
+// 🔹 Timer (15 soniya)
+interval = setInterval(() => {
+  timeLeft--;
+  timerEl.innerText = "Time: " + timeLeft;
+
+  if (timeLeft <= 0) {
+    finishTest();
+  }
+}, 1000);
+
+// 🔹 Test yakuni
+window.finishTest = function () {
+  clearInterval(interval);
+
+  const result = analyzeTremor(positions);
+  saveResult(result);
+
+  localStorage.setItem("lastResult", JSON.stringify(result));
+  window.location.href = "results.html";
+};
+</script>
+
+</body>
+</html>
 
